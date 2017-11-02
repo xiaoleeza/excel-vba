@@ -1,0 +1,65 @@
+Sub Test()
+    Sheets("sheet3").[b1] = "上报时间"
+    Sheets("sheet3").[c1] = "时间间隔"
+    Dim strTemp As String
+    For r = 2 To Sheet3.Range("a65536").End(xlUp).Row
+    strTemp = Sheet3.Range("A" & r).Value2
+    Cells(r, 2) = GetDate(strTemp)
+    Next r
+    
+    For r = 2 To Sheet3.Range("b65536").End(xlUp).Row
+    Sheet3.Cells(r, 3) = DateDiff("s", Sheet3.Range("B" & r).Value2, Sheet3.Range("B" & r + 1).Value2)
+    If Sheet3.Range("C" & r).Value2 > 1 Then
+    Sheet3.Range("C" & r).Interior.ColorIndex = 15
+    ElseIf Sheet3.Range("C" & r).Value2 <= 0 Then
+    Sheet3.Range("C" & r).Interior.ColorIndex = 3
+    End If
+    Next r
+End Sub
+
+
+Function GetDate(strValue As String) As String
+    Dim objReg As Object
+    Dim objMatchs As Object, objMatch As Object
+    Dim strPat As String
+    Dim strDay As String, strTime As String
+    Dim objDic As Object
+    Dim strKeys As Variant, strItems As Variant
+    Dim intI As Integer
+    Dim strResult As String
+    
+    strPat = "([\d]{4}).{0,1}([\d]{2}).{0,1}([\d]{2}).{0,4}([\d]{2}).{0,1}([\d]{2}).{0,1}([\d]{2})"
+    
+    Set objDic = CreateObject("Scripting.Dictionary")
+    Set objReg = CreateObject("VBScript.RegExp")
+    With objReg
+        .Global = True
+        .Pattern = strPat
+        Set objMatchs = .Execute(strValue)
+    End With
+    
+    For Each objMatch In objMatchs
+        strDay = objMatch.SubMatches(0) & "-" & objMatch.SubMatches(1) & "-" & objMatch.SubMatches(2)
+        strTime = objMatch.SubMatches(3) & ":" & objMatch.SubMatches(4) & ":" & objMatch.SubMatches(5)
+        
+        If objDic.Exists(strDay) Then
+            If objDic(strDay) > strTime Then objDic(strDay) = strTime
+        Else
+            objDic(strDay) = strTime
+        End If
+        
+        Debug.Print objMatch.Value & "==> " & strDay & "   " & strTime
+    Next
+
+    strKeys = objDic.keys
+    strItems = objDic.items
+    
+    For intI = LBound(strKeys) To UBound(strKeys)
+        strResult = strResult & "," & strKeys(intI) & Space(1) & strItems(intI)
+    Next
+    strResult = Mid(strResult, 2)
+    GetDate = strResult
+    
+    Set objDic = Nothing
+    Set objReg = Nothing
+End Function
