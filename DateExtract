@@ -1,7 +1,7 @@
 Sub Test()
     Sheets("Sheet2").[a1] = "备注"
-    Sheets("sheet3").[b1] = "上报时间"
-    Sheets("sheet3").[c1] = "时间间隔"
+    Sheets("sheet2").[b1] = "上报时间"
+    Sheets("sheet2").[c1] = "时间间隔"
     Dim strTemp As String
     i = 2
     For q = 2 To Sheet1.Range("d65536").End(xlUp).Row
