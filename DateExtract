@@ -11,6 +11,9 @@ Sub Test()
     End If
     Next q
     
+    Range("B2:B65536").NumberFormatLocal = "yyyy-mm-dd hh:mm:ss"    ' 设置单元格显示格式
+    Range("B2:B65536").HorizontalAlignment = xlCenter    ' 居中显示
+    
     For r = 2 To Sheet2.Range("a65536").End(xlUp).Row
     strTemp = Sheet2.Range("A" & r).Value2
     Cells(r, 2) = GetDate(strTemp)
@@ -57,7 +60,7 @@ Function GetDate(strValue As String) As String
             objDic(strDay) = strTime
         End If
         
-        Debug.Print objMatch.Value & "==> " & strDay & "   " & strTime
+        Debug.Print objMatch.Value & "==> " & strDay & " " & strTime
     Next
 
     strKeys = objDic.keys
