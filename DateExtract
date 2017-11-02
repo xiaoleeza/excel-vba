@@ -1,18 +1,27 @@
 Sub Test()
+    Sheets("Sheet2").[a1] = "备注"
     Sheets("sheet3").[b1] = "上报时间"
     Sheets("sheet3").[c1] = "时间间隔"
     Dim strTemp As String
-    For r = 2 To Sheet3.Range("a65536").End(xlUp).Row
-    strTemp = Sheet3.Range("A" & r).Value2
+    i = 2
+    For q = 2 To Sheet1.Range("d65536").End(xlUp).Row
+    If Sheet1.Range("D" & q).Value = 200 Then
+    Sheet2.Cells(i, 1) = Sheet1.Cells(q, 7)
+    i = i + 1
+    End If
+    Next q
+    
+    For r = 2 To Sheet2.Range("a65536").End(xlUp).Row
+    strTemp = Sheet2.Range("A" & r).Value2
     Cells(r, 2) = GetDate(strTemp)
     Next r
     
-    For r = 2 To Sheet3.Range("b65536").End(xlUp).Row
-    Sheet3.Cells(r, 3) = DateDiff("s", Sheet3.Range("B" & r).Value2, Sheet3.Range("B" & r + 1).Value2)
-    If Sheet3.Range("C" & r).Value2 > 1 Then
-    Sheet3.Range("C" & r).Interior.ColorIndex = 15
-    ElseIf Sheet3.Range("C" & r).Value2 <= 0 Then
-    Sheet3.Range("C" & r).Interior.ColorIndex = 3
+    For r = 2 To Sheet2.Range("b65536").End(xlUp).Row
+    Sheet2.Cells(r, 3) = DateDiff("s", Sheet2.Range("B" & r).Value2, Sheet2.Range("B" & r + 1).Value2)
+    If Sheet2.Range("C" & r).Value2 > 1 Then
+    Sheet2.Range("C" & r).Interior.ColorIndex = 15
+    ElseIf Sheet2.Range("C" & r).Value2 <= 0 Then
+    Sheet2.Range("C" & r).Interior.ColorIndex = 3
     End If
     Next r
 End Sub
