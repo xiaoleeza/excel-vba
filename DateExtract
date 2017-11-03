@@ -1,7 +1,9 @@
 Sub Test()
+    ' 设置列标题
     Sheets("Sheet2").[a1] = "备注"
     Sheets("sheet2").[b1] = "上报时间"
     Sheets("sheet2").[c1] = "时间间隔"
+    Sheets("sheet2").[d1] = "疑点"
     Dim strTemp As String
     i = 2
     For q = 2 To Sheet1.Range("d65536").End(xlUp).Row
@@ -10,23 +12,41 @@ Sub Test()
     i = i + 1
     End If
     Next q
-    
-    Range("B2:B65536").NumberFormatLocal = "yyyy-mm-dd hh:mm:ss"    ' 设置单元格显示格式
+    ' 设置单元格显示格式，解决时间不显示秒的问题
+    Range("B2:B65536").NumberFormatLocal = "yyyy-mm-dd hh:mm:ss"    ' 设置单元
+
+格显示格式
     Range("B2:B65536").HorizontalAlignment = xlCenter    ' 居中显示
-    
+    ' 提取A中日期时间
     For r = 2 To Sheet2.Range("a65536").End(xlUp).Row
     strTemp = Sheet2.Range("A" & r).Value2
     Cells(r, 2) = GetDate(strTemp)
     Next r
-    
+    ' 设置C疑点单元格背景色
     For r = 2 To Sheet2.Range("b65536").End(xlUp).Row
-    Sheet2.Cells(r, 3) = DateDiff("s", Sheet2.Range("B" & r).Value2, Sheet2.Range("B" & r + 1).Value2)
+    Sheet2.Cells(r, 3) = DateDiff("s", Sheet2.Range("B" & r).Value2, 
+
+Sheet2.Range("B" & r + 1).Value2)
     If Sheet2.Range("C" & r).Value2 > 1 Then
     Sheet2.Range("C" & r).Interior.ColorIndex = 15
     ElseIf Sheet2.Range("C" & r).Value2 <= 0 Then
     Sheet2.Range("C" & r).Interior.ColorIndex = 3
     End If
     Next r
+    ' 添加疑点判断，即C前后为1的情况下此处不为1
+    Dim s As Integer
+    Dim arr(1 To 3000)
+    s = 1
+    For r = 2 To Sheet2.Range("c65536").End(xlUp).Row
+    If Sheet2.Range("C" & r).Value2 <> 1 And Sheet2.Range("C" & r - 1).Value2 = 
+
+1 And Sheet2.Range("C" & r + 1).Value2 = 1 Then
+    Cells(r, 4) = "疑点"
+    arr(s) = r
+    s = s + 1
+    End If
+    Next r
+    Cells(2, 5) = Split(Trim(Join(arr)), ",")
 End Sub
 
 
@@ -40,7 +60,9 @@ Function GetDate(strValue As String) As String
     Dim intI As Integer
     Dim strResult As String
     
-    strPat = "([\d]{4}).{0,1}([\d]{2}).{0,1}([\d]{2}).{0,4}([\d]{2}).{0,1}([\d]{2}).{0,1}([\d]{2})"
+    strPat = "([\d]{4}).{0,1}([\d]{2}).{0,1}([\d]{2}).{0,4}([\d]{2}).{0,1}
+
+([\d]{2}).{0,1}([\d]{2})"
     
     Set objDic = CreateObject("Scripting.Dictionary")
     Set objReg = CreateObject("VBScript.RegExp")
@@ -51,8 +73,12 @@ Function GetDate(strValue As String) As String
     End With
     
     For Each objMatch In objMatchs
-        strDay = objMatch.SubMatches(0) & "-" & objMatch.SubMatches(1) & "-" & objMatch.SubMatches(2)
-        strTime = objMatch.SubMatches(3) & ":" & objMatch.SubMatches(4) & ":" & objMatch.SubMatches(5)
+        strDay = objMatch.SubMatches(0) & "-" & objMatch.SubMatches(1) & "-" & 
+
+objMatch.SubMatches(2)
+        strTime = objMatch.SubMatches(3) & ":" & objMatch.SubMatches(4) & ":" & 
+
+objMatch.SubMatches(5)
         
         If objDic.Exists(strDay) Then
             If objDic(strDay) > strTime Then objDic(strDay) = strTime
