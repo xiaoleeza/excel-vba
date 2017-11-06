@@ -1,0 +1,26 @@
+提取CAN数据时间
+=CONCATENATE("2017-10-20 ",MID(A2,FIND("msms",A2)+6,2),":",MID(A2,FIND("msms",A2)+8,2),":",MID(A2,FIND("msms",A2)+10,2))
+CAN数据时间间隔10s
+=CONCATENATE("2017-10-20 ",MID(A2,FIND("msms",A2)+6,2),":",MID(A2,FIND("msms",A2)+8,2),":",MID(A2,FIND("msms",A2)+10,2))
+CAN数据每条都得有ID 结果需要为整数
+Sub CAN()
+    For r = 2 To Sheet2.Range("a65536").End(xlUp).Row
+    strTemp = Sheet2.Range("A" & r).Value2
+    Sheet2.Cells(r, 2) = "=CONCATENATE(""2017-10-20 "",MID(A" & r & ",FIND(""msms"",A" & r & ")+6,2),"":"",MID(A" & r & ",FIND(""msms"",A" & r & ")+8,2),"":"",MID(A" & r & ",FIND(""msms"",A" & r & ")+10,2))"
+    '实际条数
+    Cells(r, 4) = "=(LEN(A" & r & ")-FIND(CHAR(10),A" & r & "))/(FIND(CHAR(10),A" & r & ",FIND(CHAR(10),A" & r & ")+1)-FIND(CHAR(10),A" & r & "))"
+    '下发条数
+    Cells(r, 5) = "=MID(A" & r & ",FIND(""："",A" & r & ")+1,FIND("";"",A" & r & ")-FIND(""："",A" & r & ")-1)"
+    '结果需为零
+    Cells(r, 6) = Cells(r, 4) - Cells(r, 5)
+    '标注不为零的点
+    If Sheet2.Range("F" & r).Value2 <> 0 Then
+    Sheet2.Range("E" & r).Interior.ColorIndex = 15
+    Cells(r, 7) = "疑点"
+    End If
+    Next r
+    '时间间隔
+    For r = 2 To Sheet2.Range("b65536").End(xlUp).Row
+    Sheet2.Cells(r, 3) = DateDiff("s", Sheet2.Range("B" & r).Value2, Sheet2.Range("B" & r + 1).Value2)
+    Next r
+End Sub
