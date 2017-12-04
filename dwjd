@@ -4,6 +4,9 @@ Sub Test()
     Sheets("sheet2").[b1] = "上报时间"
     Sheets("sheet2").[c1] = "时间间隔"
     Sheets("sheet2").[d1] = "疑点"
+    Sheets("sheet2").[e1] = "疑点汇总"
+    Sheets("sheet2").[i1] = "定位疑点"
+    Sheets("sheet2").[i1] = "定位疑点汇总"
     Dim strTemp As String
     i = 2
     For q = 2 To Sheet1.Range("d65536").End(xlUp).Row
@@ -41,52 +44,25 @@ Sub Test()
     End If
     Next r
     Cells(2, 5) = Split(Trim(Join(arr)), ",")
-End Sub
-
-
-Sub Test()
-    ' 设置列标题
-    Sheets("Sheet2").[a1] = "备注"
-    Sheets("sheet2").[b1] = "上报时间"
-    Sheets("sheet2").[c1] = "时间间隔"
-    Sheets("sheet2").[d1] = "疑点"
-    Dim strTemp As String
-    i = 2
-    For q = 2 To Sheet1.Range("d65536").End(xlUp).Row
-    If Sheet1.Range("D" & q).Value = 200 Then
-    Sheet2.Cells(i, 1) = Sheet1.Cells(q, 7)
-    i = i + 1
-    End If
-    Next q
-    ' 设置单元格显示格式，解决时间不显示秒的问题
-    Range("B2:B65536").NumberFormatLocal = "yyyy-mm-dd hh:mm:ss"    ' 设置单元格显示格式
-    Range("B2:B65536").HorizontalAlignment = xlCenter    ' 居中显示
-    ' 提取A中日期时间
-    For r = 2 To Sheet2.Range("a65536").End(xlUp).Row
-    strTemp = Sheet2.Range("A" & r).Value2
-    Cells(r, 2) = GetDate(strTemp)
-    Next r
-    ' 设置C疑点单元格背景色
+    
     For r = 2 To Sheet2.Range("b65536").End(xlUp).Row
-    Sheet2.Cells(r, 3) = DateDiff("s", Sheet2.Range("B" & r).Value2, Sheet2.Range("B" & r + 1).Value2)
-    If Sheet2.Range("C" & r).Value2 > 1 Then
-    Sheet2.Range("C" & r).Interior.ColorIndex = 15
-    ElseIf Sheet2.Range("C" & r).Value2 <= 0 Then
-    Sheet2.Range("C" & r).Interior.ColorIndex = 3
-    End If
+    Sheet2.Cells(r, 6) = "=MID(A" & r & ",FIND(""席门关"",A" & r & ")+4,23)"
+    Sheet2.Cells(r, 7) = "=MID(A" & r & ",FIND(""ACC"",A" & r & ")+5,2)"
+    Sheet2.Cells(r, 8) = "=IF(LEN(F" & r & ")-LEN(SUBSTITUTE(F" & r & ",""未"",))=2,""未定"",""定位"")"
     Next r
-    ' 添加疑点判断，即C前后为1的情况下此处不为1
-    Dim s As Integer
-    Dim arr(1 To 3000)
-    s = 1
+    
+    Dim ss As Integer
+    Dim arrr(1 To 3000)
+    ss = 1
     For r = 2 To Sheet2.Range("c65536").End(xlUp).Row
-    If Sheet2.Range("C" & r).Value2 <> 1 And Sheet2.Range("C" & r - 1).Value2 = 1 And Sheet2.Range("C" & r + 1).Value2 = 1 Then
-    Cells(r, 4) = "疑点"
-    arr(s) = r
-    s = s + 1
+    If Sheet2.Range("G" & r).Value2 <> Sheet2.Range("H" & r).Value2 Then
+    Cells(r, 9) = "坏点"
+    arrr(ss) = r
+    ss = ss + 1
     End If
     Next r
-    Cells(2, 5) = Split(Trim(Join(arr)), ",")
+    Cells(2, 10) = Split(Trim(Join(arrr)), ",")
+    
 End Sub
 
 
@@ -135,3 +111,5 @@ Function GetDate(strValue As String) As String
     Set objDic = Nothing
     Set objReg = Nothing
 End Function
+
+
